@@ -1,6 +1,7 @@
 module.exports = function(conf) {
-  var inherits  = require('util').inherits
-    , Base      = require('./base')
+  var request  = require('../lib/request')(conf)
+    , inherits = require('util').inherits
+    , Base     = require('./base')
     , ret;
 
   var SUPPORTED_EVENT_TYPES = [
@@ -50,6 +51,26 @@ module.exports = function(conf) {
   ret.build = function(destination, transport, eventTypes) {
     return new Notification(destination, transport, eventTypes);
   };
-  
+
+  /*
+   * StudioApp monkeypatch
+   * Send email notification to turkers via aws mturk
+   * TODO: write test
+   */
+  ret.notifyWorkers = function(workerIds, callback) {
+    var requestOptions = {
+      Subject    : 'Next Hit Chunk',
+      MessageText: 'Next Hit Message',
+    };
+    workerIds.forEach(function(workerId, index) {
+      requestOptions['WorkerId.' + (index + 1)] = workerId;
+    });
+
+    request('AWSMechanicalTurkRequester', 'NotifyWorkers', 'POST',  requestOptions, function(err, response) {
+      if (err) { callback(err); return; }
+      callback(err, response);
+    });
+  };
+
   return ret;
 }
