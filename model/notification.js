@@ -57,10 +57,12 @@ module.exports = function(conf) {
    * Send email notification to turkers via aws mturk
    * TODO: write test
    */
-  ret.notifyWorkers = function(workerIds, callback) {
+  ret.notifyWorkers = function(workerIds, subject, msg, callback) {
+    if (!workerIds || !workerIds.length) { return; }
+
     var requestOptions = {
-      Subject    : 'Next Hit Chunk',
-      MessageText: 'Next Hit Message',
+      Subject    : subject,
+      MessageText: msg,
     };
     workerIds.forEach(function(workerId, index) {
       requestOptions['WorkerId.' + (index + 1)] = workerId;
