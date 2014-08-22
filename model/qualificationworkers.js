@@ -19,14 +19,14 @@ module.exports = function(config) {
    * Create a Qualification Type
    */
    ret.createQualification = function(qualtypename, qualtypedescription,  callback){
-   	var options = {
-        Name: qualtypename
-      , Description: qualtypedescription,
-      	QualificationTypeStatus: 'Active'
+    var options = {
+        Name: qualtypename,
+        Description: qualtypedescription,
+        QualificationTypeStatus: 'Active'
     };
     request('AWSMechanicalTurkRequester', 'CreateQualificationType', 'POST', options, function(err, response) {
       if (err) { return callback(err); } 
-      if (! Assignment.prototype.nodeExists(['CreateQualificationTypeResponse', 'QualificationType','Request', 'IsValid'], response)) { callback([new Error('No "CreateQualificationTypeResponse > QualificationType > Request > IsValid" node on the response')]); return; }
+      if (! QualWorker.prototype.nodeExists(['CreateQualificationTypeResponse', 'QualificationType','Request', 'IsValid'], response)) { callback([new Error('No "CreateQualificationTypeResponse > QualificationType > Request > IsValid" node on the response')]); return; }
       if (response.CreateQualificationTypeResponse.QualificationType.Request.IsValid.toLowerCase() != 'true') {
         return callback([new Error('Response says ApproveAssignmentResult request is invalid: ' + JSON.stringify(response.ApproveAssignmentResult.Request.Errors))]);
       }
@@ -38,10 +38,10 @@ module.exports = function(config) {
    * Assign Qualification to worker
    */
    ret.assignQualToWorker = function(qualtypeid, workerid, integervalue, callback){
-   	var options = {
+    var options = {
         QualificationTypeId: qualtypeid
       , WorkerId: workerid,
-      	IntegerValue: integervalue
+        IntegerValue: integervalue
     };
     request('AWSMechanicalTurkRequester', 'AssignQualification', 'POST', options, function(err, response) {
       if (err) { return callback(err); } 
@@ -53,4 +53,5 @@ module.exports = function(config) {
     });
    };
 
+   return ret;
 };
