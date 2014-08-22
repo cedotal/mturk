@@ -26,11 +26,14 @@ module.exports = function(config) {
     };
     request('AWSMechanicalTurkRequester', 'CreateQualificationType', 'POST', options, function(err, response) {
       if (err) { return callback(err); } 
-      if (! QualWorker.prototype.nodeExists(['CreateQualificationTypeResponse', 'QualificationType','Request', 'IsValid'], response)) { callback([new Error('No "CreateQualificationTypeResponse > QualificationType > Request > IsValid" node on the response')]); return; }
-      if (response.CreateQualificationTypeResponse.QualificationType.Request.IsValid.toLowerCase() != 'true') {
-        return callback([new Error('Response says ApproveAssignmentResult request is invalid: ' + JSON.stringify(response.ApproveAssignmentResult.Request.Errors))]);
+      console.log("The response for create qual type is : ");
+      console.log(response);
+      console.dir(response.QualificationType.Request.Errors);
+      if (! QualWorker.prototype.nodeExists([ 'QualificationType','Request', 'IsValid'], response)) { callback([new Error('No "CreateQualificationTypeResponse > QualificationType > Request > IsValid" node on the response')]); return; }
+      if (response.QualificationType.Request.IsValid.toLowerCase() != 'true') {
+        return callback([new Error('Response says CreateQualificationTypeResponse request is invalid: ' + JSON.stringify(response.QualificationType.Request.Errors))]);
       }
-      callback(null);
+      callback(response);
     });
    };
 
@@ -45,11 +48,13 @@ module.exports = function(config) {
     };
     request('AWSMechanicalTurkRequester', 'AssignQualification', 'POST', options, function(err, response) {
       if (err) { return callback(err); } 
-      if (! Assignment.prototype.nodeExists(['AssignQualificationResult', 'Request', 'IsValid'], response)) { callback([new Error('No "AssignQualificationResult > Request > IsValid" node on the response')]); return; }
+      console.log("The response for assign qual type is : ");
+      console.log(response);
+      if (! QualWorker.prototype.nodeExists(['AssignQualificationResult', 'Request', 'IsValid'], response)) { callback([new Error('No "AssignQualificationResult > Request > IsValid" node on the response')]); return; }
       if (response.AssignQualificationResult.Request.IsValid.toLowerCase() != 'true') {
-        return callback([new Error('Response says AssignQualificationResult request is invalid: ' + JSON.stringify(response.ApproveAssignmentResult.Request.Errors))]);
+        return callback([new Error('Response says AssignQualificationResult request is invalid: ' + JSON.stringify(response.AssignQualificationResult.Request.Errors))]);
       }
-      callback(null);
+      callback(response);
     });
    };
 
