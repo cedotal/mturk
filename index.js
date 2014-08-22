@@ -93,6 +93,6 @@ module.exports = function(conf) {
   ret.Price        = require('./model/price')(conf);
   ret.Notification = require('./model/notification')(conf);
   ret.Assignment   = require('./model/assignment')(conf);
-  
+  ret.QualWorker   = require('./model/qualificationworkers')(conf);
   return ret;
 };
