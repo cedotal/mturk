@@ -218,7 +218,9 @@ module.exports = function(config) {
            });
          }
        }
-       callback(err, numResults, totalNumResults, pageNumber, hits);       
+       console.dir(response);
+       //callback(err, numResults, totalNumResults, pageNumber, hits);       
+       callback(response);
      });
    };
 
