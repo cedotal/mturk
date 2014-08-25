@@ -58,5 +58,29 @@ module.exports = function(config) {
     });
    };
 
+   /*
+   * Grant bonus to worker
+   */
+   ret.grantBonusToWorker = function(workerid, assignmentid, amount, currencycode, reason, callback){
+    var options = {
+      WorkerId : workerid,
+      AssignmentId : assignmentid,
+      Reward.1.Amount : amount,
+      Reward.1.CurrencyCode : currencycode,
+      Reason : reason
+    }
+    request('AWSMechanicalTurkRequester', 'GrantBonus', 'POST', options, function(err, response) {
+      if (err) { return callback(err); } 
+      console.log("The response for grand bonus is : ");
+      console.log(response);
+      if (! QualWorker.prototype.nodeExists(['GrantBonusResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GrantBonusResult > Request > IsValid" node on the response')]); return; }
+      if (response.GrantBonusResult.Request.IsValid.toLowerCase() != 'true') {
+        return callback([new Error('Response says GrantBonusResult request is invalid: ' + JSON.stringify(response.AssignQualificationResult.Request.Errors))]);
+      }
+      callback(response);
+    });
+
+   }
+
    return ret;
 };
