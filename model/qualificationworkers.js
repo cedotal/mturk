@@ -5,6 +5,7 @@ module.exports = function(config) {
   var request    = require('../lib/request')(config)
     , inherits   = require('util').inherits
     , Base       = require('./base')
+    , Price      = require('./price')
     , ret;
 
   function QualWorker() {
@@ -62,11 +63,11 @@ module.exports = function(config) {
    * Grant bonus to worker
    */
    ret.grantBonusToWorker = function(workerid, assignmentid, amount, currencycode, reason, callback){
+    var priceds = new Price(amount, currencycode);
     var options = {
       WorkerId : workerid,
       AssignmentId : assignmentid,
-      Reward.1.Amount : amount,
-      Reward.1.CurrencyCode : currencycode,
+      BonusAmount : priceds,
       Reason : reason
     }
     request('AWSMechanicalTurkRequester', 'GrantBonus', 'POST', options, function(err, response) {
