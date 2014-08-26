@@ -128,7 +128,22 @@ module.exports = function(config) {
     });
   }
 
-
+  /*
+  * Get Assignments for a HIT
+  */
+  ret.getAssignmentsForHIT = function(hitid, callback){
+    var options = {
+        HITId: hitid
+    };
+    request('AWSMechanicalTurkRequester', 'GetAssignmentsForHIT', 'POST', options, function(err, response) {
+      if (err) { return callback(err); } 
+      if (! Assignment.prototype.nodeExists(['GetAssignmentsForHITResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GetAssignmentsForHITResult > Request > IsValid" node on the response')]); return; }
+      if (response.GetAssignmentsForHITResult.Request.IsValid.toLowerCase() != 'true') {
+        return callback([new Error('Response says GetAssignmentsForHITResult request is invalid: ' + JSON.stringify(response.ApproveRejectedAssignmentResult.Request.Errors))]);
+      }
+      callback(response);
+    });
+  }
   /*
    * Approves the rejected Assignment
    *

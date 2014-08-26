@@ -62,21 +62,24 @@ module.exports = function(config) {
    /*
    * Grant bonus to worker
    */
-   ret.grantBonusToWorker = function(workerid, assignmentid, amount, currencycode, reason, callback){
-    var priceds = new Price(amount, currencycode);
+   ret.grantBonusToWorker = function(workerid, assignmentid, price, reason, callback){
+    //console.log("the amount is : "+amount);
+    //console.log("the curency code is : "+currencycode);
+    //var priceds = new Price(parseInt(amount), currencycode);
+
     var options = {
       WorkerId : workerid,
       AssignmentId : assignmentid,
-      BonusAmount : priceds,
+      BonusAmount : price,
       Reason : reason
     }
     request('AWSMechanicalTurkRequester', 'GrantBonus', 'POST', options, function(err, response) {
       if (err) { return callback(err); } 
-      console.log("The response for grand bonus is : ");
+      console.log("The response for grant bonus is : ");
       console.log(response);
       if (! QualWorker.prototype.nodeExists(['GrantBonusResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GrantBonusResult > Request > IsValid" node on the response')]); return; }
       if (response.GrantBonusResult.Request.IsValid.toLowerCase() != 'true') {
-        return callback([new Error('Response says GrantBonusResult request is invalid: ' + JSON.stringify(response.AssignQualificationResult.Request.Errors))]);
+        return callback([new Error('Response says GrantBonusResult request is invalid: ' + JSON.stringify(response.GrantBonusResult.Request.Errors))]);
       }
       callback(response);
     });
