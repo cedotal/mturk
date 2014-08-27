@@ -15,7 +15,82 @@ module.exports = function(config) {
   inherits(QualWorker, Base);
 
   ret = QualWorker;
-
+  var statisticnames = ['NumberAssignmentsAvailable',
+                        'NumberAssignmentsAccepted',
+                        'NumberAssignmentsPending',
+                        'NumberAssignmentsApproved',
+                        'NumberAssignmentsRejected',
+                        'NumberAssignmentsReturned',
+                        'NumberAssignmentsAbandoned',
+                        'PercentAssignmentsApproved',
+                        'PercentAssignmentsRejected',
+                        'TotalRewardPayout',
+                        'AverageRewardAmount',
+                        'TotalRewardFeePayout',
+                        'TotalFeePayout',
+                        'TotalRewardAndFeePayout',
+                        'TotalBonusPayout',
+                        'TotalBonusFeePayout',
+                        'NumberHITsCreated',
+                        'NumberHITsCompleted',
+                        'NumberHITsAssignable',
+                        'NumberHITsReviewable',
+                        'EstimatedRewardLiability',
+                        'EstimatedFeeLiability',
+                        'EstimatedTotalLiability' ];
+  /*
+  * Get Requester Statistics
+  */
+  ret.getRequesterStatistics = function(statisticname , callback) {
+    var options = {
+      Statistic : statisticname,
+      TimePeriod : 'LifeToDate'
+    };
+    request('AWSMechanicalTurkRequester', 'GetRequesterStatistic', 'POST', options, function(err, response) {
+      if (err) { return callback(err); } 
+      if (! QualWorker.prototype.nodeExists([ 'GetStatisticResult','Request', 'IsValid'], response)) { callback([new Error('No "GetStatisticResult > Request > IsValid" node on the response')]); return; }
+      if (response.GetStatisticResult.Request.IsValid.toLowerCase() != 'true') {
+        return callback([new Error('Response says CreateQualificationTypeResponse request is invalid: ' + JSON.stringify(response.GetStatisticResult.Request.Errors))]);
+      }
+      callback(response);
+    });
+  };
+  /*
+  * Recursive Function
+  */
+  var counter = 0;
+  function getReqStatistics(statisticname, reqstatresponse, callback){
+    var options = {
+        Statistic : statisticname,
+        TimePeriod : 'LifeToDate'
+      };
+      request('AWSMechanicalTurkRequester', 'GetRequesterStatistic', 'POST', options, function(err, response) {
+        if (err) { return callback(err); } 
+        if (! QualWorker.prototype.nodeExists([ 'GetStatisticResult','Request', 'IsValid'], response)) { callback([new Error('No "GetStatisticResult > Request > IsValid" node on the response')]); return; }
+        if (response.GetStatisticResult.Request.IsValid.toLowerCase() != 'true') {
+          return callback([new Error('Response says CreateQualificationTypeResponse request is invalid: ' + JSON.stringify(response.GetStatisticResult.Request.Errors))]);
+        }
+        counter++;
+        if(counter < statisticnames.length){
+          reqstatresponse.push(response);
+          getReqStatistics(statisticnames[counter], reqstatresponse, callback);
+        }
+        else
+        {
+          callback(reqstatresponse);
+        }
+      });
+  }
+  /*
+  * Get All Requester Statistics
+  */
+  ret.getAllRequesterStatistics = function( callback) {
+      var reqstatisticsresult = [];
+      counter = 0;
+      getReqStatistics(statisticnames[0], reqstatisticsresult, function(data){
+        callback(data);
+      });
+  };
   /*
    * Create a Qualification Type
    */
@@ -58,6 +133,23 @@ module.exports = function(config) {
       callback(response);
     });
    };
+
+   /*
+   * Get Balance
+   */
+   ret.getBalance = function(callback){
+    var options = {};
+    request('AWSMechanicalTurkRequester', 'GetAccountBalance', 'POST', options, function(err, response) {
+      if (err) { return callback(err); } 
+      console.log("The response for account balance is : ");
+      console.log(response);
+      if (! QualWorker.prototype.nodeExists(['GetAccountBalanceResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GetAccountBalanceResult > Request > IsValid" node on the response')]); return; }
+      if (response.GetAccountBalanceResult.Request.IsValid.toLowerCase() != 'true') {
+        return callback([new Error('Response says GetAccountBalanceResult request is invalid: ' + JSON.stringify(response.GetAccountBalanceResult.Request.Errors))]);
+      }
+      callback(response);
+    });
+   }
 
    /*
    * Grant bonus to worker
