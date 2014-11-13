@@ -132,6 +132,7 @@ module.exports = function(config) {
 
       if (! HIT.prototype.nodeExists(['DisposeHITResult', 'Request', 'IsValid'], response)) { callback([new Error('No "DisposeHITResult > Request > IsValid" node on the response')]); return; }
       if (response.DisposeHITResult.Request.IsValid.toLowerCase() != 'true') {
+        console.error('ERROR: Reponse was: ', JSON.stringify(response));
         callback([new Error('Response says DisposeHITResult is invalid')]);
         return;
       }
@@ -142,7 +143,7 @@ module.exports = function(config) {
 
   /*
    * Disables specified HIT.
-   * 
+   *
    * @param {hitId} The ID of the HIT to retrieve (String)
    * @param {callback} function with signature (Error error || null, HIT hit)
    *
@@ -151,7 +152,7 @@ module.exports = function(config) {
     var self = this;
 
     request('AWSMechanicalTurkRequester', 'DisableHIT', 'GET', { HITId: hitId }, function(err, response) {
-   
+
       if (err) { callback(err); return; }
 
       if (! HIT.prototype.nodeExists(['DisableHITResult', 'Request', 'IsValid'], response)) { callback([new Error('No "HIT > Request > IsValid" node on the response')]); return; }
@@ -206,7 +207,7 @@ module.exports = function(config) {
 
        if (! HIT.prototype.nodeExists(['SearchHITsResult', 'PageNumber'], response)) { callback([new Error('No "SearchHITsResult > PageNumber" node on the response')]); return; }
        var pageNumber = parseInt(response.SearchHITsResult.PageNumber, 10);
-       
+
        if (! err) {
          responseHits = response.SearchHITsResult.HIT;
          if (responseHits) {
@@ -219,7 +220,7 @@ module.exports = function(config) {
          }
        }
        console.dir(response);
-       //callback(err, numResults, totalNumResults, pageNumber, hits);       
+       //callback(err, numResults, totalNumResults, pageNumber, hits);
        callback(response);
      });
    };
