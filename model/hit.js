@@ -132,7 +132,7 @@ module.exports = function(config) {
 
       if (! HIT.prototype.nodeExists(['DisposeHITResult', 'Request', 'IsValid'], response)) { callback([new Error('No "DisposeHITResult > Request > IsValid" node on the response')]); return; }
       if (response.DisposeHITResult.Request.IsValid.toLowerCase() != 'true') {
-        console.error('ERROR: Reponse was: ', JSON.stringify(response));
+        //console.error('ERROR(alantrrs/mturk--model/hit:135): Reponse was: ', JSON.stringify(response));
         callback([new Error('Response says DisposeHITResult is invalid')]);
         return;
       }
