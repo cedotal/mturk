@@ -1,5 +1,7 @@
 log/mturk.log
 test/functional/aws_creds.js
-node_modules
+node_modules/
+npm-debug.log
+.vagrant/
 
 .DS_Store
