@@ -10,7 +10,7 @@ module.exports = function(config) {
 
   function QualWorker() {
   }
-  
+
 
   inherits(QualWorker, Base);
 
@@ -47,7 +47,7 @@ module.exports = function(config) {
       TimePeriod : 'LifeToDate'
     };
     request('AWSMechanicalTurkRequester', 'GetRequesterStatistic', 'POST', options, function(err, response) {
-      if (err) { return callback(err); } 
+      if (err) { return callback(err); }
       if (! QualWorker.prototype.nodeExists([ 'GetStatisticResult','Request', 'IsValid'], response)) { callback([new Error('No "GetStatisticResult > Request > IsValid" node on the response')]); return; }
       if (response.GetStatisticResult.Request.IsValid.toLowerCase() != 'true') {
         return callback([new Error('Response says CreateQualificationTypeResponse request is invalid: ' + JSON.stringify(response.GetStatisticResult.Request.Errors))]);
@@ -65,7 +65,7 @@ module.exports = function(config) {
         TimePeriod : 'LifeToDate'
       };
       request('AWSMechanicalTurkRequester', 'GetRequesterStatistic', 'POST', options, function(err, response) {
-        if (err) { return callback(err); } 
+        if (err) { return callback(err); }
         if (! QualWorker.prototype.nodeExists([ 'GetStatisticResult','Request', 'IsValid'], response)) { callback([new Error('No "GetStatisticResult > Request > IsValid" node on the response')]); return; }
         if (response.GetStatisticResult.Request.IsValid.toLowerCase() != 'true') {
           return callback([new Error('Response says CreateQualificationTypeResponse request is invalid: ' + JSON.stringify(response.GetStatisticResult.Request.Errors))]);
@@ -101,7 +101,7 @@ module.exports = function(config) {
         QualificationTypeStatus: 'Active'
     };
     request('AWSMechanicalTurkRequester', 'CreateQualificationType', 'POST', options, function(err, response) {
-      if (err) { return callback(err); } 
+      if (err) { return callback(err); }
       console.log("The response for create qual type is : ");
       console.log(response);
       console.dir(response.QualificationType.Request.Errors);
@@ -123,7 +123,7 @@ module.exports = function(config) {
         IntegerValue: integervalue
     };
     request('AWSMechanicalTurkRequester', 'AssignQualification', 'POST', options, function(err, response) {
-      if (err) { return callback(err); } 
+      if (err) { return callback(err); }
       console.log("The response for assign qual type is : ");
       console.log(response);
       if (! QualWorker.prototype.nodeExists(['AssignQualificationResult', 'Request', 'IsValid'], response)) { callback([new Error('No "AssignQualificationResult > Request > IsValid" node on the response')]); return; }
@@ -140,9 +140,9 @@ module.exports = function(config) {
    ret.getBalance = function(callback){
     var options = {};
     request('AWSMechanicalTurkRequester', 'GetAccountBalance', 'POST', options, function(err, response) {
-      if (err) { return callback(err); } 
-      console.log("The response for account balance is : ");
-      console.log(response);
+      if (err) { return callback(err); }
+      //console.log("The response for account balance is : ");
+      //console.log(response);
       if (! QualWorker.prototype.nodeExists(['GetAccountBalanceResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GetAccountBalanceResult > Request > IsValid" node on the response')]); return; }
       if (response.GetAccountBalanceResult.Request.IsValid.toLowerCase() != 'true') {
         return callback([new Error('Response says GetAccountBalanceResult request is invalid: ' + JSON.stringify(response.GetAccountBalanceResult.Request.Errors))]);
@@ -166,7 +166,7 @@ module.exports = function(config) {
       Reason : reason
     }
     request('AWSMechanicalTurkRequester', 'GrantBonus', 'POST', options, function(err, response) {
-      if (err) { return callback(err); } 
+      if (err) { return callback(err); }
       console.log("The response for grant bonus is : ");
       console.log(response);
       if (! QualWorker.prototype.nodeExists(['GrantBonusResult', 'Request', 'IsValid'], response)) { callback([new Error('No "GrantBonusResult > Request > IsValid" node on the response')]); return; }
