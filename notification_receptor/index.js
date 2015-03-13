@@ -13,9 +13,9 @@ module.exports = function(config) {
   receptor.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   */
   
-  var server = config.server;
+  var router = config.router;
   
-  server.get('/', requestVerifier, requestHandler);
+  router.get('/', requestVerifier, requestHandler);
 
   ret = requestHandler.emitter;
 
@@ -29,7 +29,7 @@ module.exports = function(config) {
     // receptor.close();
   };
 
-  ret.server = server;
+  ret.server = router;
   
   return ret;
 }
