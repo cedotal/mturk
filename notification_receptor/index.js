@@ -3,25 +3,33 @@ module.exports = function(config) {
     , requestVerifier = require('./request_verifier')(config)
     , requestHandler  = require('./request_handler')
     , ret;
-
+  
+  // mturk library should use the client application's server instead
+  // of creating its own
+  /*
   var receptor = express();
 
   receptor.use(receptor.router);
   receptor.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-
-  receptor.get('/', requestVerifier, requestHandler);
+  */
+  
+  var server = config.server;
+  
+  server.get('/', requestVerifier, requestHandler);
 
   ret = requestHandler.emitter;
 
   ret.start = function(callback) {
-    receptor.listen(config.receptor.port, config.receptor.host, callback);
+    // client application's server should already be listening
+    // receptor.listen(config.receptor.port, config.receptor.host, callback);
   };
 
   ret.stop = function() {
-    receptor.close();
+    // library shouldn't be able to stop the client app's server
+    // receptor.close();
   };
 
-  ret.server = receptor;
+  ret.server = server;
   
   return ret;
 }
